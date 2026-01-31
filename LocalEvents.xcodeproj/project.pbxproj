@@ -27,6 +27,8 @@
 		E81234560018 /* InterestButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81234550018; };
 		E81234560019 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81234550019; };
 		E81234560020 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81234550020; };
+		E81234560021 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81234550021; };
+		E81234560022 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E81234550022; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +53,8 @@
 		E81234550018 /* InterestButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterestButton.swift; sourceTree = "<group>"; };
 		E81234550019 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		E81234550020 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		E81234550021 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		E81234550022 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +124,7 @@
 				E812345G0012 /* Social */,
 				E812345G0013 /* Agenda */,
 				E812345G0014 /* Components */,
+				E812345G0015 /* Onboarding */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -193,6 +198,15 @@
 				E81234550018 /* InterestButton.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		E812345G0015 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				E81234550021 /* OnboardingView.swift */,
+				E81234550022 /* SplashView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -284,6 +298,8 @@
 				E81234560018 /* InterestButton.swift in Sources */,
 				E81234560019 /* SearchView.swift in Sources */,
 				E81234560020 /* ProfileView.swift in Sources */,
+				E81234560021 /* OnboardingView.swift in Sources */,
+				E81234560022 /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
