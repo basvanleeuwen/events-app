@@ -43,8 +43,12 @@ extension EventService {
         let now = Date()
 
         func date(daysFromNow: Int, hour: Int, minute: Int = 0) -> Date {
-            let day = calendar.date(byAdding: .day, value: daysFromNow, to: now)!
-            return calendar.date(bySettingHour: hour, minute: minute, second: 0, of: day)!
+            var components = calendar.dateComponents([.year, .month, .day], from: now)
+            components.day! += daysFromNow
+            components.hour = hour
+            components.minute = minute
+            components.second = 0
+            return calendar.date(from: components) ?? now
         }
 
         return [
