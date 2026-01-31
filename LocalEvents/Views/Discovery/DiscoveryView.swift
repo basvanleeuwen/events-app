@@ -8,29 +8,37 @@ struct DiscoveryView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    // City selector header
-                    cityHeader
+                VStack(alignment: .leading, spacing: 0) {
+                    // Hero header
+                    heroHeader
+                        .padding(.bottom, 20)
 
                     if viewModel.isLoading {
                         loadingView
                     } else if viewModel.filteredEvents.isEmpty {
                         emptyView
                     } else {
-                        // Category filters
-                        categoryFilters
+                        VStack(alignment: .leading, spacing: 28) {
+                            // Category carousel
+                            categorySection
 
-                        // Time filters
-                        timeFilters
+                            // Time filters
+                            timeFiltersSection
 
-                        // Events grouped by date
-                        GroupedEventListView(groupedEvents: viewModel.groupedEvents)
+                            // Events grouped by date
+                            GroupedEventListView(groupedEvents: viewModel.groupedEvents)
+                        }
                     }
                 }
-                .padding(.vertical)
             }
-            .navigationTitle("Ontdek")
-            .navigationBarTitleDisplayMode(.large)
+            .background(Color(.systemGroupedBackground))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Lokaal")
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                }
+            }
             .refreshable {
                 await viewModel.loadEvents(for: userService.currentUser.selectedCity)
             }
@@ -40,57 +48,107 @@ struct DiscoveryView: View {
         }
     }
 
-    private var cityHeader: some View {
-        Button {
-            showCityPicker = true
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "location.fill")
-                    .foregroundStyle(Color.accentColor)
+    private var heroHeader: some View {
+        VStack(spacing: 0) {
+            // Gradient background
+            ZStack(alignment: .bottomLeading) {
+                // Background gradient
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.4, green: 0.3, blue: 0.9),
+                        Color(red: 0.6, green: 0.2, blue: 0.8)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .frame(height: 180)
+                .overlay(
+                    // Decorative circles
+                    ZStack {
+                        Circle()
+                            .fill(.white.opacity(0.1))
+                            .frame(width: 200, height: 200)
+                            .offset(x: 150, y: -80)
 
-                Text(userService.currentUser.selectedCity.name)
-                    .font(.headline)
+                        Circle()
+                            .fill(.white.opacity(0.08))
+                            .frame(width: 100, height: 100)
+                            .offset(x: -50, y: 60)
 
-                Image(systemName: "chevron.down")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                        Circle()
+                            .fill(.white.opacity(0.05))
+                            .frame(width: 60, height: 60)
+                            .offset(x: 100, y: 40)
+                    }
+                )
+
+                // Content
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Ontdek")
+                        .font(.system(size: 34, weight: .bold))
+                        .foregroundStyle(.white)
+
+                    // City selector button
+                    Button {
+                        showCityPicker = true
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "location.fill")
+                                .font(.system(size: 14))
+
+                            Text(userService.currentUser.selectedCity.name)
+                                .font(.system(size: 16, weight: .semibold))
+
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(.white.opacity(0.2))
+                        .background(.ultraThinMaterial.opacity(0.3))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                }
+                .padding(20)
+                .padding(.bottom, 10)
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(Color(.systemGray6))
-            .clipShape(Capsule())
         }
-        .buttonStyle(.plain)
-        .padding(.horizontal)
     }
 
-    private var categoryFilters: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var categorySection: some View {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Text("Categorieën")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 20, weight: .bold))
 
                 Spacer()
 
                 if !viewModel.selectedCategories.isEmpty {
-                    Button("Wis") {
-                        viewModel.selectedCategories.removeAll()
+                    Button {
+                        withAnimation(.spring(response: 0.3)) {
+                            viewModel.selectedCategories.removeAll()
+                        }
+                    } label: {
+                        Text("Wis filters")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundStyle(.secondary)
                     }
-                    .font(.caption)
                 }
             }
             .padding(.horizontal)
 
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: 12) {
                     ForEach(EventCategory.allCases) { category in
                         CategoryFilterChip(
                             category: category,
                             isSelected: viewModel.selectedCategories.contains(category)
                         ) {
-                            viewModel.toggleCategory(category)
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                viewModel.toggleCategory(category)
+                            }
                         }
                     }
                 }
@@ -99,31 +157,18 @@ struct DiscoveryView: View {
         }
     }
 
-    private var timeFilters: some View {
+    private var timeFiltersSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
+            HStack(spacing: 10) {
                 ForEach(EventsViewModel.TimeFilter.allCases) { filter in
-                    Button {
-                        viewModel.setTimeFilter(filter)
-                    } label: {
-                        Text(filter.rawValue)
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 8)
-                            .background(
-                                viewModel.selectedTimeFilter == filter
-                                    ? Color.accentColor
-                                    : Color(.systemGray6)
-                            )
-                            .foregroundStyle(
-                                viewModel.selectedTimeFilter == filter
-                                    ? .white
-                                    : .primary
-                            )
-                            .clipShape(Capsule())
+                    TimeFilterChip(
+                        filter: filter,
+                        isSelected: viewModel.selectedTimeFilter == filter
+                    ) {
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                            viewModel.setTimeFilter(filter)
+                        }
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .padding(.horizontal)
@@ -131,40 +176,115 @@ struct DiscoveryView: View {
     }
 
     private var loadingView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             ProgressView()
+                .scaleEffect(1.2)
+
             Text("Evenementen laden...")
-                .font(.subheadline)
+                .font(.system(size: 15, weight: .medium))
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 60)
+        .padding(.vertical, 80)
     }
 
     private var emptyView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "calendar.badge.exclamationmark")
-                .font(.system(size: 48))
-                .foregroundStyle(.secondary)
+        VStack(spacing: 20) {
+            ZStack {
+                Circle()
+                    .fill(Color(.systemGray5))
+                    .frame(width: 100, height: 100)
 
-            Text("Geen evenementen gevonden")
-                .font(.headline)
+                Image(systemName: "calendar.badge.exclamationmark")
+                    .font(.system(size: 40))
+                    .foregroundStyle(.secondary)
+            }
 
-            Text("Probeer andere filters of bekijk een andere stad")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            VStack(spacing: 8) {
+                Text("Geen evenementen gevonden")
+                    .font(.system(size: 18, weight: .semibold))
+
+                Text("Probeer andere filters of bekijk een andere stad")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
 
             if viewModel.hasActiveFilters {
-                Button("Filters wissen") {
-                    viewModel.clearFilters()
+                Button {
+                    withAnimation {
+                        viewModel.clearFilters()
+                    }
+                } label: {
+                    Text("Filters wissen")
+                        .font(.system(size: 15, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(red: 0.4, green: 0.3, blue: 0.9), Color(red: 0.6, green: 0.2, blue: 0.8)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .clipShape(Capsule())
                 }
-                .buttonStyle(.bordered)
+                .buttonStyle(ScaleButtonStyle())
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 60)
-        .padding(.horizontal)
+        .padding(.horizontal, 40)
+    }
+}
+
+struct TimeFilterChip: View {
+    let filter: EventsViewModel.TimeFilter
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 6) {
+                if isSelected {
+                    Image(systemName: filterIcon)
+                        .font(.system(size: 12, weight: .semibold))
+                }
+                Text(filter.rawValue)
+                    .font(.system(size: 14, weight: .semibold))
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(
+                Group {
+                    if isSelected {
+                        LinearGradient(
+                            colors: [Color(red: 0.4, green: 0.3, blue: 0.9), Color(red: 0.6, green: 0.2, blue: 0.8)],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    } else {
+                        Color(.systemBackground)
+                    }
+                }
+            )
+            .foregroundStyle(isSelected ? .white : .primary)
+            .clipShape(Capsule())
+            .shadow(color: isSelected ? Color(red: 0.5, green: 0.3, blue: 0.85).opacity(0.3) : .clear, radius: 8, x: 0, y: 4)
+            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+        }
+        .buttonStyle(ScaleButtonStyle())
+    }
+
+    private var filterIcon: String {
+        switch filter {
+        case .all: return "sparkles"
+        case .today: return "sun.max.fill"
+        case .tomorrow: return "sunrise.fill"
+        case .thisWeek: return "calendar"
+        case .thisWeekend: return "party.popper.fill"
+        }
     }
 }
 

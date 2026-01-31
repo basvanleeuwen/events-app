@@ -3,6 +3,8 @@ import SwiftUI
 struct InterestButton: View {
     let event: Event
     @EnvironmentObject var userService: UserService
+    @State private var starScale: CGFloat = 1
+    @State private var checkScale: CGFloat = 1
 
     var isInterested: Bool {
         userService.isInterested(in: event.id)
@@ -16,53 +18,105 @@ struct InterestButton: View {
         HStack(spacing: 12) {
             // Interested button
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     userService.toggleInterested(eventId: event.id)
                 }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: isInterested ? "star.fill" : "star")
-                        .font(.body)
-                    Text("Interessant")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                // Bounce animation
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
+                    starScale = 1.3
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(isInterested ? Color.yellow.opacity(0.2) : Color(.systemGray6))
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.5).delay(0.1)) {
+                    starScale = 1
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: isInterested ? "star.fill" : "star")
+                        .font(.system(size: 16, weight: .semibold))
+                        .scaleEffect(starScale)
+                        .symbolEffect(.bounce, value: isInterested)
+                    Text("Interessant")
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+                .background(
+                    Group {
+                        if isInterested {
+                            LinearGradient(
+                                colors: [Color.orange.opacity(0.15), Color.yellow.opacity(0.15)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        } else {
+                            Color(.systemGray6)
+                        }
+                    }
+                )
                 .foregroundStyle(isInterested ? .orange : .primary)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
-                        .strokeBorder(isInterested ? Color.orange.opacity(0.5) : Color.clear, lineWidth: 1)
+                        .strokeBorder(
+                            isInterested
+                                ? LinearGradient(colors: [.orange, .yellow], startPoint: .leading, endPoint: .trailing)
+                                : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing),
+                            lineWidth: 2
+                        )
                 )
+                .shadow(color: isInterested ? .orange.opacity(0.2) : .clear, radius: 8, x: 0, y: 4)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ScaleButtonStyle())
 
             // Going button
             Button {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     userService.toggleGoing(eventId: event.id)
                 }
-            } label: {
-                HStack(spacing: 6) {
-                    Image(systemName: isGoing ? "checkmark.circle.fill" : "checkmark.circle")
-                        .font(.body)
-                    Text("Ik ga")
-                        .font(.subheadline)
-                        .fontWeight(.medium)
+                // Bounce animation
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.5)) {
+                    checkScale = 1.3
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(isGoing ? Color.green.opacity(0.2) : Color(.systemGray6))
+                withAnimation(.spring(response: 0.2, dampingFraction: 0.5).delay(0.1)) {
+                    checkScale = 1
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: isGoing ? "checkmark.circle.fill" : "checkmark.circle")
+                        .font(.system(size: 16, weight: .semibold))
+                        .scaleEffect(checkScale)
+                        .symbolEffect(.bounce, value: isGoing)
+                    Text("Ik ga")
+                        .font(.system(size: 15, weight: .semibold))
+                }
+                .padding(.horizontal, 18)
+                .padding(.vertical, 12)
+                .background(
+                    Group {
+                        if isGoing {
+                            LinearGradient(
+                                colors: [Color.green.opacity(0.15), Color.mint.opacity(0.15)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        } else {
+                            Color(.systemGray6)
+                        }
+                    }
+                )
                 .foregroundStyle(isGoing ? .green : .primary)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule()
-                        .strokeBorder(isGoing ? Color.green.opacity(0.5) : Color.clear, lineWidth: 1)
+                        .strokeBorder(
+                            isGoing
+                                ? LinearGradient(colors: [.green, .mint], startPoint: .leading, endPoint: .trailing)
+                                : LinearGradient(colors: [Color.clear], startPoint: .leading, endPoint: .trailing),
+                            lineWidth: 2
+                        )
                 )
+                .shadow(color: isGoing ? .green.opacity(0.2) : .clear, radius: 8, x: 0, y: 4)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(ScaleButtonStyle())
         }
     }
 }
@@ -70,6 +124,7 @@ struct InterestButton: View {
 struct CompactInterestButton: View {
     let event: Event
     @EnvironmentObject var userService: UserService
+    @State private var scale: CGFloat = 1
 
     var isInterested: Bool {
         userService.isInterested(in: event.id)
@@ -81,7 +136,7 @@ struct CompactInterestButton: View {
 
     var body: some View {
         Button {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                 if isGoing {
                     userService.toggleGoing(eventId: event.id)
                 } else if isInterested {
@@ -90,13 +145,29 @@ struct CompactInterestButton: View {
                     userService.toggleInterested(eventId: event.id)
                 }
             }
+            // Bounce animation
+            withAnimation(.spring(response: 0.15, dampingFraction: 0.5)) {
+                scale = 1.2
+            }
+            withAnimation(.spring(response: 0.15, dampingFraction: 0.5).delay(0.1)) {
+                scale = 1
+            }
         } label: {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundStyle(iconColor)
-                .frame(width: 44, height: 44)
-                .background(Color(.systemGray6))
-                .clipShape(Circle())
+            ZStack {
+                Circle()
+                    .fill(backgroundColor)
+                    .frame(width: 40, height: 40)
+
+                Circle()
+                    .strokeBorder(borderColor, lineWidth: 2)
+                    .frame(width: 40, height: 40)
+
+                Image(systemName: icon)
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(iconColor)
+                    .scaleEffect(scale)
+            }
+            .shadow(color: shadowColor, radius: 6, x: 0, y: 3)
         }
         .buttonStyle(.plain)
     }
@@ -117,6 +188,33 @@ struct CompactInterestButton: View {
             return .orange
         }
         return .secondary
+    }
+
+    private var backgroundColor: Color {
+        if isGoing {
+            return Color.green.opacity(0.1)
+        } else if isInterested {
+            return Color.orange.opacity(0.1)
+        }
+        return Color(.systemGray6)
+    }
+
+    private var borderColor: Color {
+        if isGoing {
+            return .green.opacity(0.3)
+        } else if isInterested {
+            return .orange.opacity(0.3)
+        }
+        return .clear
+    }
+
+    private var shadowColor: Color {
+        if isGoing {
+            return .green.opacity(0.15)
+        } else if isInterested {
+            return .orange.opacity(0.15)
+        }
+        return .clear
     }
 }
 
