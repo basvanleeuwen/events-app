@@ -21,7 +21,7 @@ struct CityPickerView: View {
                         } label: {
                             HStack(spacing: 12) {
                                 Image(systemName: "location.fill")
-                                    .foregroundStyle(.accentColor)
+                                    .foregroundStyle(Color.accentColor)
                                     .frame(width: 28)
 
                                 VStack(alignment: .leading) {
@@ -84,7 +84,7 @@ struct CityRow: View {
 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.accentColor)
+                        .foregroundStyle(Color.accentColor)
                 }
             }
         }

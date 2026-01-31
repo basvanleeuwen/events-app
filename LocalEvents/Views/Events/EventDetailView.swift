@@ -83,7 +83,7 @@ struct EventDetailView: View {
                                 Image(systemName: "arrow.up.right")
                             }
                             .font(.subheadline)
-                            .foregroundStyle(.accentColor)
+                            .foregroundStyle(Color.accentColor)
                         }
                     }
                 }
@@ -138,7 +138,7 @@ struct EventDetailView: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.title3)
-                .foregroundStyle(.accentColor)
+                .foregroundStyle(Color.accentColor)
                 .frame(width: 32)
 
             VStack(alignment: .leading, spacing: 2) {

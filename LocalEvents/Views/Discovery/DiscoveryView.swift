@@ -46,7 +46,7 @@ struct DiscoveryView: View {
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "location.fill")
-                    .foregroundStyle(.accentColor)
+                    .foregroundStyle(Color.accentColor)
 
                 Text(userService.currentUser.selectedCity.name)
                     .font(.headline)
